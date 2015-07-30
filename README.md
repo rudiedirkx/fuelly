@@ -9,12 +9,12 @@ Features
 
 * Log in
 * List verhicles
-
-Yeah, that's it.
+* Add fuel-up
 
 Set up
 ----
 
-Copy `env.php.original` to `env.php` and change the constants. You'll need [`HTTP`][1] as well.
+1. Copy `env.php.original` to `env.php` and change the constants.
+2. You'll need [`HTTP`][1] for the HTTP requests.
 
 [1]: https://github.com/rudiedirkx/HTTP

@@ -3,6 +3,7 @@
 namespace rdx\fuelly;
 
 use HTTP;
+use InvalidArgumentException;
 
 class Client {
 
@@ -11,6 +12,8 @@ class Client {
 
 	public $mail = '';
 	public $pass = '';
+	public $dateFormat = 'd/m/Y';
+	public $timeFormat = 'g:i a';
 
 	public $session = '';
 	public $username = '';
@@ -20,33 +23,90 @@ class Client {
 	/**
 	 *
 	 */
-	public function getVehicles() {
+	public function addFuelUp( $data ) {
+		$data += array(
+			'errorlevel' => 2,
+			'price_per_unit' => '',
+			'cost' => '',
+			'city_pct' => '0',
+			'fueltype_id' => '',
+			'fuelup_date' => date($this->dateFormat),
+			'time' => date($this->timeFormat),
+			'paymenttype_id' => '',
+			'fuelbrand' => '',
+			'tirepsi' => '',
+			'note' => '',
+		);
+
+		$required = array('usercar_id', 'miles_last_fuelup', 'amount');
+		$missing = array_diff($required, array_keys(array_filter($data)));
+		if ( $missing ) {
+			throw new InvalidArgumentException('Missing params: ' . implode(', ', $missing));
+		}
+
+		// GET /fuelups/create
+		$response = $this->_get('fuelups/create');
+
+		if ( $token = $this->extractFormToken($response->body) ) {
+			$data['_token'] = $token;
+
+			// POST /fuelups/create
+			$response = $this->_post('fuelups', array(
+				'data' => $data,
+			));
+			if ( $response->code == 302 ) {
+				$response = $this->_get($response->headers['location'][0]);
+
+				// Take new fuelup ID from response and add it
+				if ( $response->code == 200 ) {
+					$regex = '#' . preg_quote($this->base, '#') . 'fuelups/(\d+)/edit#';
+					if ( preg_match($regex, $response->body, $match) ) {
+						$response->fuelup_id = $match[1];
+					}
+				}
+
+				return $response;
+			}
+		}
+	}
+
+	/**
+	 *
+	 */
+	public function getVehicles( $html ) {
 		$response = $this->_get('dashboard');
 		if ( $response->code == 200 ) {
-			$regex = '#<ul class="dashboard-vehicle" data-clickable="([^"]+)">[\w\W]+?</ul>#';
-			$vehicles = array();
-			if ( preg_match_all($regex, $response->body, $matches) ) {
-				foreach ( $matches[0] as $i => $html ) {
-					$url = $matches[1][$i];
-
-					preg_match('#/(\d+)$#', $url, $match);
-					$id = $match[1];
-
-					preg_match('#<h3[^>]*>(.+?)</h3>#', $html, $match);
-					$name = htmlspecialchars_decode($match[1]);
-
-					preg_match("#:\s*url\('/([^']+)'\)#", $html, $match);
-					$image = $this->base . $match[1];
-
-					preg_match("#data-trend='([^']+)'#", $html, $match);
-					$trend = @json_decode($match[1], true) ?: false;
-
-					$vehicles[] = compact('url', 'id', 'name', 'image', 'trend');
-				}
-			}
-
-			return $vehicles;
+			return $this->extractVehicles($response->body);
 		}
+	}
+
+	/**
+	 *
+	 */
+	protected function extractVehicles( $html ) {
+		$regex = '#<ul class="dashboard-vehicle" data-clickable="([^"]+)">[\w\W]+?</ul>#';
+		$vehicles = array();
+		if ( preg_match_all($regex, $html, $matches) ) {
+			foreach ( $matches[0] as $i => $html ) {
+				$url = $matches[1][$i];
+
+				preg_match('#/(\d+)$#', $url, $match);
+				$id = $match[1];
+
+				preg_match('#<h3[^>]*>(.+?)</h3>#', $html, $match);
+				$name = htmlspecialchars_decode($match[1]);
+
+				preg_match("#:\s*url\('/([^']+)'\)#", $html, $match);
+				$image = $this->base . $match[1];
+
+				preg_match("#data-trend='([^']+)'#", $html, $match);
+				$trend = @json_decode($match[1], true) ?: false;
+
+				$vehicles[] = compact('url', 'id', 'name', 'image', 'trend');
+			}
+		}
+
+		return $vehicles;
 	}
 
 	/**
@@ -60,24 +120,19 @@ class Client {
 		// GET /login
 		$response = $this->_get('login', array('login' => true));
 
-		$form = $response->body;
-		if ( preg_match('#<input.+?name="_token".+?>#i', $form, $match) ) {
-			if ( preg_match('#value="([^"]+)"#', $match[0], $match) ) {
-				$token = $match[1];
-
-				// POST /login
-				$response = $this->_post('login', array(
-					'login' => true,
-					'cookies' => $response->cookies,
-					'data' => array(
-						'_token' => $token,
-						'email' => $this->mail,
-						'password' => $this->pass,
-					),
-				));
-				$this->session = $response->cookies_by_name['fuelly_session'][0];
-				return $this->checkSession();
-			}
+		if ( $token = $this->extractFormToken($response->body) ) {
+			// POST /login
+			$response = $this->_post('login', array(
+				'login' => true,
+				'cookies' => $response->cookies,
+				'data' => array(
+					'_token' => $token,
+					'email' => $this->mail,
+					'password' => $this->pass,
+				),
+			));
+			$this->session = $response->cookies_by_name['fuelly_session'][0];
+			return $this->checkSession();
 		}
 
 		return false;
@@ -92,6 +147,10 @@ class Client {
 			$regex = '#<a href="' . preg_quote($this->base, '#') . 'driver/([\w\d]+)/edit">Settings</a>#';
 			if ( preg_match($regex, $response->body, $match) ) {
 				$this->username = $match[1];
+
+				// Since we're downloading /dashboard anyway, let's extract our vehicles from it
+				$this->vehicles = $this->extractVehicles($response->body);
+
 				return true;
 			}
 		}
@@ -108,6 +167,17 @@ class Client {
 		}
 
 		return true;
+	}
+
+	/**
+	 *
+	 */
+	protected function extractFormToken( $html ) {
+		if ( preg_match('#<input.+?name="_token".+?>#i', $html, $match) ) {
+			if ( preg_match('#value="([^"]+)"#', $match[0], $match) ) {
+				return $match[1];
+			}
+		}
 	}
 
 
