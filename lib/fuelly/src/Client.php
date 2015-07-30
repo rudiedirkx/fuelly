@@ -1,6 +1,10 @@
 <?php
 
-class Fuelly {
+namespace rdx\fuelly;
+
+use HTTP;
+
+class Client {
 
 	public $base = 'http://www.fuelly.com/';
 	public $loginBase = 'https://m.fuelly.com/';

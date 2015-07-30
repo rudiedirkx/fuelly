@@ -4,7 +4,9 @@ require 'bootstrap.php';
 
 header('Content-type: text/plain; charset=utf-8');
 
-$client = new Fuelly;
+use rdx\fuelly\Client;
+
+$client = new Client;
 $client->mail = FUELLY_TEST_MAIL;
 $client->pass = FUELLY_TEST_PASS;
 $client->session = @$_GET['session'];
