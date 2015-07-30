@@ -20,6 +20,38 @@ class Client {
 	/**
 	 *
 	 */
+	public function getVehicles() {
+		$response = $this->_get('dashboard');
+		if ( $response->code == 200 ) {
+			$regex = '#<ul class="dashboard-vehicle" data-clickable="([^"]+)">[\w\W]+?</ul>#';
+			$vehicles = array();
+			if ( preg_match_all($regex, $response->body, $matches) ) {
+				foreach ( $matches[0] as $i => $html ) {
+					$url = $matches[1][$i];
+
+					preg_match('#/(\d+)$#', $url, $match);
+					$id = $match[1];
+
+					preg_match('#<h3[^>]*>(.+?)</h3>#', $html, $match);
+					$name = htmlspecialchars_decode($match[1]);
+
+					preg_match("#:\s*url\('/([^']+)'\)#", $html, $match);
+					$image = $this->base . $match[1];
+
+					preg_match("#data-trend='([^']+)'#", $html, $match);
+					$trend = @json_decode($match[1], true) ?: false;
+
+					$vehicles[] = compact('url', 'id', 'name', 'image', 'trend');
+				}
+			}
+
+			return $vehicles;
+		}
+	}
+
+	/**
+	 *
+	 */
 	public function logIn() {
 		if ( !$this->mail || !$this->pass ) {
 			return false;
