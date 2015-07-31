@@ -23,6 +23,36 @@ class Client {
 	/**
 	 *
 	 */
+	public function getAllFuelups( $id ) {
+		$response = $this->_get('car/make/model/2001/username/' . $id . '/export');
+		if ( $token = $this->extractFormToken($response->body) ) {
+			$response = $this->_post('exportfuelups', array(
+				'data' => array(
+					'_token' => $token,
+					'usercar_id' => $id,
+				),
+			));
+			if ( $response->code == 200 ) {
+				$lines = array_filter(preg_split('#[\r\n]+#', $response->body));
+				$header = $rows = array();
+				foreach ($lines as $line) {
+					$row = array_map('trim', str_getcsv($line));
+					if ( !$header ) {
+						$header = $row;
+					}
+					else {
+						$rows[] = array_combine($header, $row);
+					}
+				}
+
+				return $rows;
+			}
+		}
+	}
+
+	/**
+	 *
+	 */
 	public function addFuelUp( $data ) {
 		$data += array(
 			'errorlevel' => 2,
