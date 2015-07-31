@@ -142,6 +142,10 @@ class Client {
 	 *
 	 */
 	public function checkSession() {
+		if ( !$this->session ) {
+			return false;
+		}
+
 		$response = $this->_get('dashboard');
 		if ( $response->code == 200 ) {
 			$regex = '#<a href="' . preg_quote($this->base, '#') . 'driver/([\w\d]+)/edit">Settings</a>#';
