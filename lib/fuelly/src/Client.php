@@ -23,13 +23,117 @@ class Client {
 	/**
 	 *
 	 */
-	public function getAllFuelups( $id ) {
-		$response = $this->_get('car/make/model/2001/username/' . $id . '/export');
+	public function getFuelUp( $id ) {
+		$fuelup = compact('id');
+
+		$response = $this->_get('fuelups/' . $id . '/edit');
+
+		preg_match_all('#<input[\s\S]+?name="([^"]+)"[\s\S]+?>#', $response->body, $matches, PREG_SET_ORDER);
+		foreach ($matches as $match) {
+			if ( in_array($match[1], array('_token', 'miles_last_fuelup', 'price_per_unit', 'amount', 'fuelup_date')) ) {
+				preg_match('#value="([^"]+)"#', $match[0], $match2);
+				$fuelup[ $match[1] ] = $match2[1];
+			}
+		}
+
+		preg_match('#<textarea[^>]+name="note"[^>]*>([^>]+)</textarea>#', $response->body, $match);
+		$fuelup['note'] = trim(@$match[1]);
+
+		return $fuelup;
+	}
+
+	/**
+	 *
+	 */
+	public function updateFuelUp( $id, $data ) {
+		$data = $this->_validateFuelUpData($data);
+		unset($data['id']);
+
+		if ( !isset($data['_token']) ) {
+			$response = $this->_get('fuelups/' . $id . '/edit');
+			$token = $this->extractFormToken($response->body);
+		}
+
+		$data['_method'] = 'PUT';
+		$response = $this->_post('fuelups/' . $id, array(
+			'data' => $data,
+		));
+		return $response->code == 302;
+	}
+
+	/**
+	 *
+	 */
+	public function _validateFuelUpData( $data ) {
+		$data += array(
+			'errorlevel' => 2,
+			'price_per_unit' => '',
+			'cost' => '',
+			'city_pct' => '0',
+			'fueltype_id' => '',
+			'fuelup_date' => date($this->dateFormat),
+			'time' => date($this->timeFormat),
+			'paymenttype_id' => '',
+			'fuelbrand' => '',
+			'tirepsi' => '',
+			'note' => '',
+		);
+
+		$required = array('usercar_id', 'miles_last_fuelup', 'amount');
+		$missing = array_diff($required, array_keys(array_filter($data)));
+		if ( $missing ) {
+			throw new InvalidArgumentException('Missing params: ' . implode(', ', $missing));
+		}
+
+		return $data;
+	}
+
+	/**
+	 *
+	 */
+	public function getFuelUpsWithIds( $vehicleId, $limit = 15 ) {
+		$query = http_build_query(array(
+			'iDisplayStart' => 0,
+			'iDisplayLength' => $limit,
+			'sSortDir_0' => 'desc',
+			'usercar_id' => $vehicleId,
+		));
+		$response = $this->_get('ajax/fuelup-log?' . $query);
+		if ( $response->code == 200 ) {
+			if ( $response->response ) {
+				$fuelups = array();
+				foreach ( $response->response['aaData'] as $fuelup ) {
+					if ( preg_match('#fuelups/(\d+)/edit#', $fuelup[0], $match) ) {
+// print_r($fuelup);
+						$fuelup = array(
+							'id' => $match[1],
+							'usercar_id' => $vehicleId,
+							'fuelup_date' => $fuelup[2][0],
+							'miles_last_fuelup' => $fuelup[3][0],
+							'amount' => $fuelup[4][0],
+						);
+
+						$fuelups[] = $fuelup;
+					}
+				}
+
+				return $fuelups;
+			}
+		}
+
+		return array();
+	}
+
+	/**
+	 *
+	 */
+	public function getAllFuelups( $vehicleId ) {
+		$response = $this->_get('car/make/model/2001/username/' . $vehicleId . '/export');
 		if ( $token = $this->extractFormToken($response->body) ) {
 			$response = $this->_post('exportfuelups', array(
 				'data' => array(
 					'_token' => $token,
-					'usercar_id' => $id,
+					'usercar_id' => $vehicleId,
 				),
 			));
 			if ( $response->code == 200 ) {
@@ -54,25 +158,7 @@ class Client {
 	 *
 	 */
 	public function addFuelUp( $data ) {
-		$data += array(
-			'errorlevel' => 2,
-			'price_per_unit' => '',
-			'cost' => '',
-			'city_pct' => '0',
-			'fueltype_id' => '',
-			'fuelup_date' => date($this->dateFormat),
-			'time' => date($this->timeFormat),
-			'paymenttype_id' => '',
-			'fuelbrand' => '',
-			'tirepsi' => '',
-			'note' => '',
-		);
-
-		$required = array('usercar_id', 'miles_last_fuelup', 'amount');
-		$missing = array_diff($required, array_keys(array_filter($data)));
-		if ( $missing ) {
-			throw new InvalidArgumentException('Missing params: ' . implode(', ', $missing));
-		}
+		$data = $this->_validateFuelUpData($data);
 
 		// GET /fuelups/create
 		$response = $this->_get('fuelups/create');
