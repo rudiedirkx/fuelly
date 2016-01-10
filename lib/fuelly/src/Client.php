@@ -2,7 +2,7 @@
 
 namespace rdx\fuelly;
 
-use HTTP;
+use rdx\http\HTTP;
 use InvalidArgumentException;
 use rdx\fuelly\WebAuth;
 

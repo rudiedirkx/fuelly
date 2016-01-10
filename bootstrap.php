@@ -1,9 +1,9 @@
 <?php
 
 require __DIR__ . '/env.php';
-require WHERE_HTTP_AT . '/HTTP.php';
 
-// This could be autoloaded...
+// @todo Composer, incl self-load?
+require WHERE_IS_HTTP . '/autoload.php';
 require __DIR__ . '/lib/fuelly/autoload.php';
 
 header('Content-type: text/plain; charset=utf-8');
