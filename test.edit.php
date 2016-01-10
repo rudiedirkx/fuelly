@@ -13,8 +13,12 @@ $vehicle = $vehicles[ array_rand($vehicles) ];
 print_r($vehicle);
 echo "\n\n";
 
+echo "Fuel-ups (scrape):\n";
+$fuelups = $client->getFuelUpsWithIds($vehicle['id'], 50);
+print_r($fuelups);
+echo "\n\n";
+
 echo "Fuel-up (scrape):\n";
-$fuelups = $client->getFuelUpsWithIds($vehicle['id']);
 // $fuelup = $fuelups[ array_rand($fuelups) ];
 $fuelup = $fuelups[0];
 print_r($fuelup);
