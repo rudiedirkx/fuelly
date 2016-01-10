@@ -1,0 +1,20 @@
+{
+    "name": "rdx/fuelly",
+    "description": "Fuelly fake 'API' client",
+    "require": {
+        "rdx/http": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "rdx\\fuelly\\": "lib/fuelly/src"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Rudie Dirkx",
+            "email": "github@hotblocks.nl"
+        }
+    ],
+    "minimum-stability": "dev"
+}
