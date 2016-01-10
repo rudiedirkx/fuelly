@@ -4,21 +4,28 @@ namespace rdx\fuelly;
 
 use HTTP;
 use InvalidArgumentException;
+use rdx\fuelly\WebAuth;
 
 class Client {
 
 	public $base = 'http://www.fuelly.com/';
 	public $loginBase = 'https://m.fuelly.com/';
 
-	public $mail = '';
-	public $pass = '';
 	public $dateFormat = 'd/m/Y';
 	public $timeFormat = 'g:i a';
 
-	public $session = '';
+	public $auth; // rdx\fuelly\WebAuth
 	public $username = '';
+	public $vehicles = array();
 
 	public $log = array();
+
+	/**
+	 * Dependency constructor
+	 */
+	public function __construct( WebAuth $auth ) {
+		$this->auth = $auth;
+	}
 
 	/**
 	 *
@@ -189,11 +196,9 @@ class Client {
 	/**
 	 *
 	 */
-	public function getVehicles( $html ) {
-		$response = $this->_get('dashboard');
-		if ( $response->code == 200 ) {
-			return $this->extractVehicles($response->body);
-		}
+	public function getVehicles() {
+		// Must exist, because session must be valid, so we did a `GET /dashboard`
+		return $this->vehicles;
 	}
 
 	/**
@@ -229,7 +234,7 @@ class Client {
 	 *
 	 */
 	public function logIn() {
-		if ( !$this->mail || !$this->pass ) {
+		if ( !$this->auth->mail || !$this->auth->pass ) {
 			return false;
 		}
 
@@ -243,11 +248,11 @@ class Client {
 				'cookies' => $response->cookies,
 				'data' => array(
 					'_token' => $token,
-					'email' => $this->mail,
-					'password' => $this->pass,
+					'email' => $this->auth->mail,
+					'password' => $this->auth->pass,
 				),
 			));
-			$this->session = $response->cookies_by_name['fuelly_session'][0];
+			$this->auth->session = $response->cookies_by_name['fuelly_session'][0];
 			return $this->checkSession();
 		}
 
@@ -258,7 +263,7 @@ class Client {
 	 *
 	 */
 	public function checkSession() {
-		if ( !$this->session ) {
+		if ( !$this->auth->session ) {
 			return false;
 		}
 
@@ -329,8 +334,8 @@ class Client {
 	 * HTTP REQUEST
 	 */
 	public function _http( $uri, $options = array() ) {
-		if ($this->session) {
-			$options['cookies'][] = array('fuelly_session', $this->session);
+		if ($this->auth->session) {
+			$options['cookies'][] = array('fuelly_session', $this->auth->session);
 		}
 
 		$url = $this->_url($uri, $options);

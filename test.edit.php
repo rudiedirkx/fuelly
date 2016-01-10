@@ -5,7 +5,7 @@ require 'bootstrap.php';
 $client = getTestClient(FUELLY_TEST_MAIL, FUELLY_TEST_PASS, @$_GET['session']);
 
 $client->refreshSession();
-echo $client->session . "\n\n\n";
+echo $client->auth->session . "\n\n\n";
 
 echo "Vehicle:\n";
 $vehicles = $client->vehicles;

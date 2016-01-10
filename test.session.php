@@ -17,4 +17,4 @@ print_r($client);
 echo "\n\n";
 
 echo "\n\n";
-echo "To save this session, go to\n\n" . basename(__FILE__) . '?session=' . $client->session;
+echo "To save this session, go to\n\n" . basename(__FILE__) . '?session=' . $client->auth->session;

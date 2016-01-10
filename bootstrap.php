@@ -9,11 +9,9 @@ require __DIR__ . '/lib/fuelly/autoload.php';
 header('Content-type: text/plain; charset=utf-8');
 
 use rdx\fuelly\Client;
+use rdx\fuelly\WebAuth;
 
 function getTestClient($mail, $pass, $session) {
-	$client = new Client;
-	$client->mail = $mail;
-	$client->pass = $pass;
-	$client->session = $session;
+	$client = new Client(new WebAuth($mail, $pass, $session));
 	return $client;
 }
