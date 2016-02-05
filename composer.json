@@ -2,7 +2,8 @@
     "name": "rdx/fuelly",
     "description": "Fuelly fake 'API' client",
     "require": {
-        "rdx/http": "dev-master"
+        "rdx/http": "dev-master",
+        "rdx/units": "dev-master"
     },
     "autoload": {
         "psr-4": {

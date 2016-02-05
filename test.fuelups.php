@@ -14,6 +14,6 @@ print_r($vehicle);
 echo "\n\n";
 
 echo "All fuel-ups:\n";
-$fuelups = $client->getAllFuelups($vehicle['id']);
+$fuelups = $client->getAllFuelups($vehicle);
 print_r($fuelups);
 echo "\n\n";

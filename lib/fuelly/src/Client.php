@@ -5,6 +5,8 @@ namespace rdx\fuelly;
 use rdx\http\HTTP;
 use InvalidArgumentException;
 use rdx\fuelly\WebAuth;
+use rdx\fuelly\Vehicle;
+use rdx\fuelly\FuelUp;
 
 class Client {
 
@@ -98,12 +100,12 @@ class Client {
 	/**
 	 *
 	 */
-	public function getFuelUpsWithIds( $vehicleId, $limit = 15 ) {
+	public function getFuelUpsWithIds( Vehicle $vehicle, $limit = 15 ) {
 		$query = http_build_query(array(
 			'iDisplayStart' => 0,
 			'iDisplayLength' => $limit,
 			'sSortDir_0' => 'desc',
-			'usercar_id' => $vehicleId,
+			'usercar_id' => $vehicle->id,
 		));
 		$response = $this->_get('ajax/fuelup-log?' . $query);
 		if ( $response->code == 200 ) {
@@ -111,18 +113,20 @@ class Client {
 				$fuelups = array();
 				foreach ( $response->response['aaData'] as $fuelup ) {
 					if ( preg_match('#fuelups/(\d+)/edit#', $fuelup[0], $match) ) {
-// print_r($fuelup);
 						$fuelup = array(
 							'id' => $match[1],
-							'usercar_id' => $vehicleId,
+							'usercar_id' => $vehicle->id,
 							'fuelup_date' => $fuelup[2][0],
 							'miles_last_fuelup' => $fuelup[3][0],
 							'amount' => $fuelup[4][0],
 						);
 
-						$fuelups[] = $fuelup;
+						$fuelups[ $fuelup['id'] ] = new FuelUp($vehicle, $fuelup);
 					}
 				}
+
+				// Sort by date DESC
+				uasort($fuelups, array(FuelUp::class, 'dateCmp'));
 
 				return $fuelups;
 			}
@@ -134,13 +138,13 @@ class Client {
 	/**
 	 *
 	 */
-	public function getAllFuelups( $vehicleId ) {
-		$response = $this->_get('car/make/model/2001/username/' . $vehicleId . '/export');
+	public function getAllFuelups( Vehicle $vehicle ) {
+		$response = $this->_get('car/make/model/2001/username/' . $vehicle->id . '/export');
 		if ( $token = $this->extractFormToken($response->body) ) {
 			$response = $this->_post('exportfuelups', array(
 				'data' => array(
 					'_token' => $token,
-					'usercar_id' => $vehicleId,
+					'usercar_id' => $vehicle->id,
 				),
 			));
 			if ( $response->code == 200 ) {
@@ -196,6 +200,14 @@ class Client {
 	/**
 	 *
 	 */
+	public function getVehicle( $id ) {
+		$vehicles = $this->getVehicles();
+		return @$vehicles[$id];
+	}
+
+	/**
+	 *
+	 */
 	public function getVehicles() {
 		// Must exist, because session must be valid, so we did a `GET /dashboard`
 		return $this->vehicles;
@@ -223,7 +235,7 @@ class Client {
 				preg_match("#data-trend='([^']+)'#", $html, $match);
 				$trend = @json_decode($match[1], true) ?: false;
 
-				$vehicles[] = compact('url', 'id', 'name', 'image', 'trend');
+				$vehicles[$id] = new Vehicle($this, compact('url', 'id', 'name', 'image', 'trend'));
 			}
 		}
 

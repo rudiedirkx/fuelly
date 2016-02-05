@@ -15,9 +15,10 @@ echo "\n\n";
 
 echo "Fuelling:\n";
 $response = $client->addFuelUp(array(
-	'usercar_id' => $vehicle['id'],
+	'usercar_id' => $vehicle->id,
 	'miles_last_fuelup' => 100,
 	'amount' => 10,
+	'note' => 'TEST TEST TEST',
 ));
 if ( !empty($response->fuelup_id) ) {
 	var_dump($response->fuelup_id);
