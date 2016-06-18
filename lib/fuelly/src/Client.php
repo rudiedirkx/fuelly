@@ -37,7 +37,7 @@ class Client {
 	 */
 	public function createTrendInputConversion() {
 		// Trend is always in real numbers, and only its natives are reliable so use those
-		return new InputConversion('ml', 'usg', $this->input->mileage, ',', '.');
+		return new InputConversion('ml', 'usg', $this->input->mileage, '.', ',');
 	}
 
 	/**

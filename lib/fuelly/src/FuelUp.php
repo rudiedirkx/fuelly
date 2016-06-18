@@ -32,7 +32,7 @@ class FuelUp {
 	public static function createFromDetail( Vehicle $vehicle, array $fuelup, InputConversion $input = null ) {
 		// @todo Parse date correctly
 		$date = DateTime::createFromFormat('d-m-y', $fuelup['fuelup_date']);
-		return new static($vehicle, $date, $fuelup['miles_last_fuelup'], $fuelup['amount']);
+		return new static($vehicle, $date, $fuelup['miles_last_fuelup'], $fuelup['amount'], $input);
 	}
 
 	/**

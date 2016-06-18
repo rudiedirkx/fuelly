@@ -2,28 +2,12 @@
 
 namespace rdx\fuelly;
 
+use rdx\fuelly\UnitConversion;
 use rdx\units\Length;
 use rdx\units\Mileage;
 use rdx\units\Volume;
 
-class InputConversion {
-
-	public $distance = '';
-	public $volume = '';
-	public $mileage = '';
-	public $thousands = '';
-	public $decimals = '';
-
-	/**
-	 * Dependency constructor
-	 */
-	public function __construct( $distance, $volume, $mileage, $thousands, $decimals ) {
-		$this->distance = $distance;
-		$this->volume = $volume;
-		$this->mileage = $mileage;
-		$this->thousands = $thousands;
-		$this->decimals = $decimals;
-	}
+class InputConversion extends UnitConversion {
 
 	/**
 	 *
