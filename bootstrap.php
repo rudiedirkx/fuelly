@@ -10,6 +10,8 @@ use rdx\fuelly\Client;
 use rdx\fuelly\WebAuth;
 
 function getTestClient($mail, $pass, $session) {
-	$client = new Client(new WebAuth($mail, $pass, $session));
+	$auth = new WebAuth($mail, $pass, $session);
+	$input = new InputConversion('km', 'l', 'kmpl', ',', '.');
+	$client = new Client($auth, $input);
 	return $client;
 }

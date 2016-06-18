@@ -13,13 +13,19 @@ class FuelUp {
 	public $vehicle; // rdx\fuelly\Vehicle
 
 	public $date; // DateTime
+	public $amount; // rdx\units\Volume
+	public $distance; // rdx\units\Length
+	public $mileage; // rdx\units\Mileage
+
+	public $raw_amount;
+	public $raw_distance;
 
 	/**
 	 *
 	 */
 	public static function createFromTrend( Vehicle $vehicle, array $fuelup, InputConversion $input = null ) {
 		// Trend is always in real numbers, and only its natives are reliable so use those
-		$input or $input = $client->createTrendInputConversion();
+		$input or $input = $vehicle->client->createTrendInputConversion();
 
 		// @todo Parse date correctly
 		$date = DateTime::createFromFormat('Y-m-d H:i:s', $fuelup['fuelup_date']);
