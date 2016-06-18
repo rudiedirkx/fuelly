@@ -58,8 +58,6 @@ class FuelUp {
 		$this->distance = $input->convertDistance($this->raw_distance);
 
 		$this->mileage = static::createMileage($this->distance, $this->amount);
-
-		// $this->original = $fuelup;
 	}
 
 	/**

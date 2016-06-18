@@ -1,15 +1,19 @@
 Fuelly 'API' client
 ====
 
-This fake API client, using browser sessions and scraping like a fool, can
-use some basic Fuelly functionality.
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/rudiedirkx/Fuelly/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/rudiedirkx/Fuelly/?branch=master)
+
+This fake API client (using browser sessions and scraping like a fool) can
+use some basic Fuelly functionality. It includes unit & number conversion, but
+configuring it is up to the API consumer.
 
 Features
 ----
 
 * Log in
 * List verhicles
-* Add fuel-up
+* List vehicle fuel-ups
+* <del>Add fuel-up</del>
 
 Set up
 ----

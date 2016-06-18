@@ -49,7 +49,7 @@ class Client {
 		$response = $this->_get('fuelups/' . $id . '/edit');
 
 		preg_match_all('#<input[\s\S]+?name="([^"]+)"[\s\S]+?>#', $response->body, $matches, PREG_SET_ORDER);
-		foreach ($matches as $match) {
+		foreach ( $matches as $match ) {
 			if ( in_array($match[1], array('_token', 'miles_last_fuelup', 'price_per_unit', 'amount', 'fuelup_date')) ) {
 				preg_match('#value="([^"]+)"#', $match[0], $match2);
 				$fuelup[ $match[1] ] = $match2[1];
@@ -71,7 +71,7 @@ class Client {
 
 		if ( !isset($data['_token']) ) {
 			$response = $this->_get('fuelups/' . $id . '/edit');
-			$token = $this->extractFormToken($response->body);
+			$data['_token'] = $this->extractFormToken($response->body);
 		}
 
 		$data['_method'] = 'PUT';
@@ -161,7 +161,7 @@ class Client {
 			if ( $response->code == 200 ) {
 				$lines = array_filter(preg_split('#[\r\n]+#', $response->body));
 				$header = $rows = array();
-				foreach ($lines as $line) {
+				foreach ( $lines as $line ) {
 					$row = array_map('trim', str_getcsv($line));
 					if ( !$header ) {
 						$header = $row;
@@ -363,6 +363,7 @@ class Client {
 
 		$url = $this->_url($uri, $options);
 
+		$log = array();
 		$log['req'] = $options['method'] . ' ' . $url;
 		$this->log[] = &$log;
 
