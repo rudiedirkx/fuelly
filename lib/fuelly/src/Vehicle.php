@@ -19,7 +19,7 @@ class Vehicle {
 	 *
 	 */
 	public function __construct( Client $client, array $vehicle ) {
-		// $this->client = $client;
+		$this->client = $client;
 
 		$this->id = $vehicle['id'];
 		$this->url = $vehicle['url'];
@@ -27,8 +27,10 @@ class Vehicle {
 		$this->image = $vehicle['image'];
 
 		if ( isset($vehicle['trend']) ) {
+			$input = $client->createTrendInputConversion();
+
 			foreach ( $vehicle['trend'] as $fuelup) {
-				$this->trend[] = new FuelUp($this, $fuelup);
+				$this->trend[] = FuelUp::createFromTrend($this, $fuelup, $input);
 			}
 
 			// Sort by date DESC

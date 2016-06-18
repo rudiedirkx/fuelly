@@ -2,11 +2,12 @@
 
 namespace rdx\fuelly;
 
-use rdx\http\HTTP;
 use InvalidArgumentException;
-use rdx\fuelly\WebAuth;
-use rdx\fuelly\Vehicle;
 use rdx\fuelly\FuelUp;
+use rdx\fuelly\UnitConversion;
+use rdx\fuelly\Vehicle;
+use rdx\fuelly\WebAuth;
+use rdx\http\HTTP;
 
 class Client {
 
@@ -17,6 +18,7 @@ class Client {
 	public $timeFormat = 'g:i a';
 
 	public $auth; // rdx\fuelly\WebAuth
+	public $input; // rdx\fuelly\InputConversion
 	public $username = '';
 	public $vehicles = array();
 
@@ -25,8 +27,17 @@ class Client {
 	/**
 	 * Dependency constructor
 	 */
-	public function __construct( WebAuth $auth ) {
+	public function __construct( WebAuth $auth, InputConversion $input ) {
 		$this->auth = $auth;
+		$this->input = $input;
+	}
+
+	/**
+	 *
+	 */
+	public function createTrendInputConversion() {
+		// Trend is always in real numbers, and only its natives are reliable so use those
+		return new InputConversion('ml', 'usg', $this->input->mileage, ',', '.');
 	}
 
 	/**
@@ -121,7 +132,7 @@ class Client {
 							'amount' => $fuelup[4][0],
 						);
 
-						$fuelups[ $fuelup['id'] ] = new FuelUp($vehicle, $fuelup);
+						$fuelups[ $fuelup['id'] ] = FuelUp::createFromDetail($vehicle, $fuelup);
 					}
 				}
 
@@ -298,7 +309,7 @@ class Client {
 	/**
 	 *
 	 */
-	public function refreshSession() {
+	public function ensureSession() {
 		if ( !$this->checkSession() ) {
 			return $this->logIn();
 		}
@@ -351,13 +362,18 @@ class Client {
 		}
 
 		$url = $this->_url($uri, $options);
+
 		$log['req'] = $options['method'] . ' ' . $url;
+		$this->log[] = &$log;
+
+		$_start = microtime(1);
 		$request = HTTP::create($url, $options);
 
 		$response = $request->request();
-		$log['rsp'] = $response->code . ' ' . $response->status;
+		$_time = microtime(1) - $_start;
 
-		$this->log[] = $log;
+		$log['rsp'] = $response->code . ' ' . $response->status;
+		$log['time'] = $_time;
 
 		return $response;
 	}

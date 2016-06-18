@@ -2,9 +2,11 @@
 
 namespace rdx\fuelly;
 
-use rdx\fuelly\Vehicle;
 use DateTime;
+use rdx\fuelly\Vehicle;
+use rdx\units\Length;
 use rdx\units\Mileage;
+use rdx\units\Volume;
 
 class FuelUp {
 
@@ -15,21 +17,41 @@ class FuelUp {
 	/**
 	 *
 	 */
-	public function __construct( Vehicle $vehicle, array $fuelup ) {
-		// $this->vehicle = $vehicle;
+	public static function createFromTrend( Vehicle $vehicle, array $fuelup, InputConversion $input = null ) {
+		// Trend is always in real numbers, and only its natives are reliable so use those
+		$input or $input = $client->createTrendInputConversion();
 
 		// @todo Parse date correctly
-		// @todo Parse amount correctly
-		// @todo Parse distance correctly
+		$date = DateTime::createFromFormat('Y-m-d H:i:s', $fuelup['fuelup_date']);
+		return new static($vehicle, $date, $fuelup['miles_last_fuelup'], $fuelup['amount'], $input);
+	}
 
-		$this->date =
-			DateTime::createFromFormat('Y-m-d H:i:s', $fuelup['fuelup_date']) ?:
-			DateTime::createFromFormat('d-m-y', $fuelup['fuelup_date']);
+	/**
+	 *
+	 */
+	public static function createFromDetail( Vehicle $vehicle, array $fuelup, InputConversion $input = null ) {
+		// @todo Parse date correctly
+		$date = DateTime::createFromFormat('d-m-y', $fuelup['fuelup_date']);
+		return new static($vehicle, $date, $fuelup['miles_last_fuelup'], $fuelup['amount']);
+	}
 
-		$this->amount = self::number(@$fuelup['raw_amount'] ?: $fuelup['amount']);
-		$this->distance = self::number($fuelup['miles_last_fuelup']);
+	/**
+	 *
+	 */
+	protected function __construct( Vehicle $vehicle, DateTime $date, $raw_distance, $raw_amount, InputConversion $input = null ) {
+		$this->vehicle = $vehicle;
 
-		$this->mileage = new Mileage($this->distance / $this->amount);
+		$input or $input = $vehicle->client->input;
+
+		$this->date = $date;
+
+		$this->raw_amount = $input->convertNumber($raw_amount);
+		$this->raw_distance = $input->convertNumber($raw_distance);
+
+		$this->amount = $input->convertVolume($this->raw_amount);
+		$this->distance = $input->convertDistance($this->raw_distance);
+
+		$this->mileage = static::createMileage($this->distance, $this->amount);
 
 		// $this->original = $fuelup;
 	}
@@ -37,8 +59,9 @@ class FuelUp {
 	/**
 	 *
 	 */
-	public static function number( $str ) {
-		return (float) str_replace(',', '.', $str);
+	public static function createMileage( Length $distance, Volume $amount ) {
+		// Since we don't know the original mileage from here, we'll construct a known unit from known values
+		return new Mileage($distance->to('km') / $amount->to('l'), 'kmpl');
 	}
 
 	/**

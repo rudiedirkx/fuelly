@@ -9,7 +9,7 @@ print_r($client);
 echo "\n\n";
 
 echo "Refresh:\n";
-var_dump($client->refreshSession());
+var_dump($client->ensureSession());
 echo "\n\n";
 
 echo "Client:\n";
