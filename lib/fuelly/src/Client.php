@@ -357,7 +357,7 @@ class Client {
 	 * HTTP REQUEST
 	 */
 	public function _http( $uri, $options = array() ) {
-		if ($this->auth->session) {
+		if ( $this->auth->session ) {
 			$options['cookies'][] = array('fuelly_session', $this->auth->session);
 		}
 
