@@ -13,11 +13,11 @@ class FuelUp {
 	public $vehicle; // rdx\fuelly\Vehicle
 
 	public $date; // DateTime
-	public $amount; // rdx\units\Volume
+	public $volume; // rdx\units\Volume
 	public $distance; // rdx\units\Length
 	public $mileage; // rdx\units\Mileage
 
-	public $raw_amount;
+	public $raw_volume;
 	public $raw_distance;
 
 	/**
@@ -44,28 +44,28 @@ class FuelUp {
 	/**
 	 *
 	 */
-	protected function __construct( Vehicle $vehicle, DateTime $date, $raw_distance, $raw_amount, InputConversion $input = null ) {
+	protected function __construct( Vehicle $vehicle, DateTime $date, $raw_distance, $raw_volume, InputConversion $input = null ) {
 		$this->vehicle = $vehicle;
 
 		$input or $input = $vehicle->client->input;
 
 		$this->date = $date;
 
-		$this->raw_amount = $input->convertNumber($raw_amount);
+		$this->raw_volume = $input->convertNumber($raw_volume);
 		$this->raw_distance = $input->convertNumber($raw_distance);
 
-		$this->amount = $input->convertVolume($this->raw_amount);
+		$this->volume = $input->convertVolume($this->raw_volume);
 		$this->distance = $input->convertDistance($this->raw_distance);
 
-		$this->mileage = static::createMileage($this->distance, $this->amount);
+		$this->mileage = static::createMileage($this->distance, $this->volume);
 	}
 
 	/**
 	 *
 	 */
-	public static function createMileage( Length $distance, Volume $amount ) {
+	public static function createMileage( Length $distance, Volume $volume ) {
 		// Since we don't know the original mileage from here, we'll construct a known unit from known values
-		return new Mileage($distance->to('km') / $amount->to('l'), 'kmpl');
+		return new Mileage($distance->to('km') / $volume->to('l'), 'kmpl');
 	}
 
 	/**
