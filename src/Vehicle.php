@@ -29,7 +29,7 @@ class Vehicle {
 		if ( isset($vehicle['trend']) ) {
 			$input = $client->createTrendInputConversion();
 
-			foreach ( $vehicle['trend'] as $fuelup) {
+			foreach ( $vehicle['trend'] as $fuelup ) {
 				$this->trend[] = FuelUp::createFromTrend($this, $fuelup, $input);
 			}
 

@@ -4,7 +4,6 @@ namespace rdx\fuelly;
 
 use InvalidArgumentException;
 use rdx\fuelly\FuelUp;
-use rdx\fuelly\UnitConversion;
 use rdx\fuelly\Vehicle;
 use rdx\fuelly\WebAuth;
 use rdx\http\HTTP;
