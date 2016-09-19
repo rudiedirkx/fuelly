@@ -226,23 +226,23 @@ class Client {
 	/**
 	 *
 	 */
-	protected function extractVehicles( $html ) {
+	protected function extractVehicles( $page_html ) {
 		$regex = '#<ul class="dashboard-vehicle" data-clickable="([^"]+)">[\w\W]+?</ul>#';
 		$vehicles = array();
-		if ( preg_match_all($regex, $html, $matches) ) {
-			foreach ( $matches[0] as $i => $html ) {
+		if ( preg_match_all($regex, $page_html, $matches) ) {
+			foreach ( $matches[0] as $i => $car_html ) {
 				$url = $matches[1][$i];
 
 				preg_match('#/(\d+)$#', $url, $match);
 				$id = $match[1];
 
-				preg_match('#<h3[^>]*>(.+?)</h3>#', $html, $match);
+				preg_match('#<h3[^>]*>(.+?)</h3>#', $car_html, $match);
 				$name = htmlspecialchars_decode($match[1]);
 
-				preg_match("#:\s*url\('/([^']+)'\)#", $html, $match);
-				$image = $this->base . $match[1];
+				preg_match("#background\-image:\s*url\(([^\)]+)\)#", $car_html, $match);
+				$image = $this->base . trim($match[1], "/'");
 
-				preg_match("#data-trend='([^']+)'#", $html, $match);
+				preg_match("#data-trend='([^']+)'#", $car_html, $match);
 				$trend = @json_decode($match[1], true) ?: false;
 
 				$vehicles[$id] = new Vehicle($this, compact('url', 'id', 'name', 'image', 'trend'));
