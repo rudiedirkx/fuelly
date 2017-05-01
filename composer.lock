@@ -1,0 +1,91 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "4aeb100d0c98647c30a4af2b26a3e477",
+    "content-hash": "e95dea92cd16c932e34c54680a2739a4",
+    "packages": [
+        {
+            "name": "rdx/http",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rudiedirkx/HTTP.git",
+                "reference": "67611de8eceb5c7ffb77d0fe6f6bf3e8ca9ad59a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rudiedirkx/HTTP/zipball/67611de8eceb5c7ffb77d0fe6f6bf3e8ca9ad59a",
+                "reference": "67611de8eceb5c7ffb77d0fe6f6bf3e8ca9ad59a",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "rdx\\http\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rudie Dirkx",
+                    "email": "github@hotblocks.nl"
+                }
+            ],
+            "description": "A simple HTTP wrapper around CURL, with request and response classes.",
+            "time": "2016-10-14 19:20:34"
+        },
+        {
+            "name": "rdx/units",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rudiedirkx/Units.git",
+                "reference": "f33b1f3274f007b62299d64a32d31c6d7c131806"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rudiedirkx/Units/zipball/f33b1f3274f007b62299d64a32d31c6d7c131806",
+                "reference": "f33b1f3274f007b62299d64a32d31c6d7c131806",
+                "shasum": ""
+            },
+            "require-dev": {
+                "behat/behat": "^3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "rdx\\units\\": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rudie Dirkx",
+                    "email": "github@hotblocks.nl"
+                }
+            ],
+            "description": "Convert between units",
+            "time": "2017-04-29 22:43:57"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "rdx/http": 20,
+        "rdx/units": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
