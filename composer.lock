@@ -4,12 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4aeb100d0c98647c30a4af2b26a3e477",
-    "content-hash": "e95dea92cd16c932e34c54680a2739a4",
+    "content-hash": "a4e627becca3a09c0fcc84d016a245db",
     "packages": [
         {
             "name": "rdx/http",
-            "version": "dev-master",
+            "version": "1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rudiedirkx/HTTP.git",
@@ -38,11 +37,11 @@
                 }
             ],
             "description": "A simple HTTP wrapper around CURL, with request and response classes.",
-            "time": "2016-10-14 19:20:34"
+            "time": "2016-10-14T19:20:34+00:00"
         },
         {
             "name": "rdx/units",
-            "version": "dev-master",
+            "version": "1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rudiedirkx/Units.git",
@@ -74,16 +73,13 @@
                 }
             ],
             "description": "Convert between units",
-            "time": "2017-04-29 22:43:57"
+            "time": "2017-04-29T22:43:57+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "dev",
-    "stability-flags": {
-        "rdx/http": 20,
-        "rdx/units": 20
-    },
+    "minimum-stability": "stable",
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
