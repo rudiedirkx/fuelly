@@ -7,6 +7,7 @@ use rdx\fuelly\FuelUp;
 use rdx\fuelly\Vehicle;
 use rdx\fuelly\WebAuth;
 use rdx\http\HTTP;
+use rdx\jsdom\Node;
 
 class Client {
 
@@ -182,17 +183,18 @@ class Client {
 		$data = $this->_validateFuelUpData($data);
 
 		// GET /fuelups/create
-		$response = $this->_get('fuelups/create');
+		$response = $this->_get('https://www.fuelly.com/fuelups/create?usercar_id=' . $data['usercar_id']);
 
-		if ( $token = $this->extractFormToken($response->body) ) {
+		$token = $this->extractFormToken($response->body);
+		if ( $token ) {
 			$data['_token'] = $token;
 
 			// POST /fuelups/create
-			$response = $this->_post('fuelups', array(
+			$response = $this->_post('https://www.fuelly.com/fuelups', array(
 				'data' => $data,
 			));
 			if ( $response->code == 302 ) {
-				$response = $this->_get($response->headers['location'][0]);
+				$response = $this->_get(str_replace('https:', 'http:', $response->headers['location'][0]));
 
 				// Take new fuelup ID from response and add it
 				if ( $response->code == 200 ) {
@@ -320,11 +322,9 @@ class Client {
 	 *
 	 */
 	protected function extractFormToken( $html ) {
-		if ( preg_match('#<input.+?name="_token".+?>#i', $html, $match) ) {
-			if ( preg_match('#value="([^"]+)"#', $match[0], $match) ) {
-				return $match[1];
-			}
-		}
+		$doc = Node::create($html);
+		$el = $doc->query('input[name="_token"]');
+		return $el['value'];
 	}
 
 

@@ -3,7 +3,8 @@
     "description": "Fuelly fake 'API' client",
     "require": {
         "rdx/http": "^1.0",
-        "rdx/units": "^1.0"
+        "rdx/units": "^1.0",
+        "rdx/js-dom": "^1.1"
     },
     "autoload": {
         "psr-4": {

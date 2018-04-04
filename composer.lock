@@ -4,19 +4,19 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "a4e627becca3a09c0fcc84d016a245db",
+    "content-hash": "1731149f3921a8df1eb3f492a2d34fda",
     "packages": [
         {
             "name": "rdx/http",
             "version": "1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/rudiedirkx/HTTP.git",
+                "url": "https://github.com/rudiedirkx/http.git",
                 "reference": "67611de8eceb5c7ffb77d0fe6f6bf3e8ca9ad59a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rudiedirkx/HTTP/zipball/67611de8eceb5c7ffb77d0fe6f6bf3e8ca9ad59a",
+                "url": "https://api.github.com/repos/rudiedirkx/http/zipball/67611de8eceb5c7ffb77d0fe6f6bf3e8ca9ad59a",
                 "reference": "67611de8eceb5c7ffb77d0fe6f6bf3e8ca9ad59a",
                 "shasum": ""
             },
@@ -40,16 +40,52 @@
             "time": "2016-10-14T19:20:34+00:00"
         },
         {
+            "name": "rdx/js-dom",
+            "version": "1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rudiedirkx/php-js-dom.git",
+                "reference": "c36b2ba7580a344fb8e2a305a784e25698cd642f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rudiedirkx/php-js-dom/zipball/c36b2ba7580a344fb8e2a305a784e25698cd642f",
+                "reference": "c36b2ba7580a344fb8e2a305a784e25698cd642f",
+                "shasum": ""
+            },
+            "require": {
+                "symfony/css-selector": "^3.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "rdx\\jsdom\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rudie Dirkx",
+                    "email": "github@hotblocks.nl"
+                }
+            ],
+            "description": "JS-like DOM traversal",
+            "time": "2018-01-07T01:03:25+00:00"
+        },
+        {
             "name": "rdx/units",
             "version": "1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/rudiedirkx/Units.git",
+                "url": "https://github.com/rudiedirkx/units.git",
                 "reference": "f33b1f3274f007b62299d64a32d31c6d7c131806"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rudiedirkx/Units/zipball/f33b1f3274f007b62299d64a32d31c6d7c131806",
+                "url": "https://api.github.com/repos/rudiedirkx/units/zipball/f33b1f3274f007b62299d64a32d31c6d7c131806",
                 "reference": "f33b1f3274f007b62299d64a32d31c6d7c131806",
                 "shasum": ""
             },
@@ -74,6 +110,59 @@
             ],
             "description": "Convert between units",
             "time": "2017-04-29T22:43:57+00:00"
+        },
+        {
+            "name": "symfony/css-selector",
+            "version": "v3.4.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/css-selector.git",
+                "reference": "519a80d7c1d95c6cc0b67f686d15fe27c6910de0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/519a80d7c1d95c6cc0b67f686d15fe27c6910de0",
+                "reference": "519a80d7c1d95c6cc0b67f686d15fe27c6910de0",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.5.9|>=7.0.8"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\CssSelector\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jean-François Simon",
+                    "email": "jeanfrancois.simon@sensiolabs.com"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony CssSelector Component",
+            "homepage": "https://symfony.com",
+            "time": "2018-03-19T22:32:39+00:00"
         }
     ],
     "packages-dev": [],
